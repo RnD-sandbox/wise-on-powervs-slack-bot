@@ -1,8 +1,7 @@
 import json
 import slack
 import os
-from pathlib import Path
-from flask import Flask
+from flask import Flask, jsonify
 from slackeventsapi import SlackEventAdapter
 
 # configuring flask application
@@ -14,6 +13,14 @@ slack_event_adapter = SlackEventAdapter(
 
 client = slack.WebClient(token=os.environ["SLACK_TOKEN"])
 BOT_ID = client.api_call("auth.test")["user_id"]
+
+client.chat_postMessage(channel="#watson-research", text="Backend is up! CE test")
+
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    # Additional health check logic can be added here
+    return jsonify(status="healthy"), 200
 
 
 @slack_event_adapter.on("message")
